@@ -1,1 +1,596 @@
-# pesan-buat-mantan-ter....
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>A Letter I Never Sent</title>
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+
+body{
+    min-height:100vh;
+    overflow:hidden;
+    font-family:Georgia,serif;
+    color:#fff;
+    background:
+    radial-gradient(circle at 50% 20%,#392344,#15121f 45%,#07070d);
+}
+
+canvas{
+    position:fixed;
+    inset:0;
+    z-index:0;
+}
+
+.screen{
+    position:fixed;
+    inset:0;
+    z-index:2;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:25px;
+    transition:1s ease;
+}
+
+.hidden{
+    opacity:0;
+    pointer-events:none;
+    transform:scale(1.08);
+}
+
+.box{
+    width:min(720px,94vw);
+    padding:45px 35px;
+    text-align:center;
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:25px;
+    background:rgba(15,13,24,.72);
+    backdrop-filter:blur(18px);
+    box-shadow:0 30px 100px #0008;
+}
+
+.small{
+    font:10px Arial;
+    letter-spacing:5px;
+    color:#bba9c6;
+    margin-bottom:20px;
+}
+
+h1{
+    font-size:clamp(38px,8vw,70px);
+    font-weight:normal;
+    line-height:1.1;
+    margin-bottom:15px;
+}
+
+.subtitle{
+    color:#aaa;
+    font:13px Arial;
+    line-height:1.8;
+    margin-bottom:35px;
+}
+
+button{
+    border:1px solid #b76a9e;
+    color:white;
+    background:linear-gradient(90deg,#7e3c78,#b45a9d);
+    padding:14px 30px;
+    border-radius:50px;
+    cursor:pointer;
+    transition:.3s;
+    font:12px Arial;
+    letter-spacing:1px;
+}
+
+button:hover{
+    transform:translateY(-3px);
+    box-shadow:0 10px 35px #c45caf55;
+}
+
+.progress{
+    margin:25px auto 0;
+    width:200px;
+    height:4px;
+    background:#ffffff18;
+    border-radius:10px;
+    overflow:hidden;
+}
+
+.bar{
+    height:100%;
+    width:0%;
+    background:#d78ac5;
+    transition:.5s;
+}
+
+.choice{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:15px;
+    margin-top:25px;
+}
+
+.choice button{
+    background:#ffffff08;
+    border:1px solid #ffffff18;
+}
+
+.choice button:hover{
+    background:#b45a9d33;
+}
+
+.question{
+    font-size:24px;
+    margin-bottom:10px;
+}
+
+.result{
+    min-height:35px;
+    margin-top:20px;
+    color:#d9a6cc;
+    font:13px Arial;
+}
+
+.game-title{
+    font-size:32px;
+    margin-bottom:10px;
+}
+
+.memory{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:10px;
+    max-width:430px;
+    margin:25px auto;
+}
+
+.card{
+    height:75px;
+    border-radius:12px;
+    border:1px solid #ffffff18;
+    background:#ffffff08;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-size:25px;
+    cursor:pointer;
+    transition:.3s;
+}
+
+.card.open{
+    background:#9d4c9133;
+}
+
+.letter{
+    max-height:80vh;
+    overflow:auto;
+    text-align:left;
+    line-height:2;
+    font:14px Arial;
+    color:#d0cbd4;
+    white-space:pre-line;
+    padding-right:8px;
+}
+
+.letter h2{
+    text-align:center;
+    font:normal 32px Georgia;
+    color:white;
+    margin-bottom:25px;
+}
+
+.signature{
+    text-align:right;
+    margin-top:30px;
+    font:22px cursive;
+    color:#d49ac5;
+}
+
+.key{
+    font-size:65px;
+    margin:25px;
+    animation:pulse 1.8s infinite;
+}
+
+@keyframes pulse{
+    50%{transform:scale(1.12);filter:drop-shadow(0 0 20px #d67fc1)}
+}
+
+.fade{
+    animation:fade .8s ease;
+}
+
+@keyframes fade{
+    from{opacity:0;transform:translateY(20px)}
+    to{opacity:1;transform:none}
+}
+
+@media(max-width:500px){
+    .choice{grid-template-columns:1fr}
+    .memory{grid-template-columns:repeat(3,1fr)}
+}
+</style>
+</head>
+
+<body>
+
+<canvas id="stars"></canvas>
+
+<!-- HALAMAN AWAL -->
+<section class="screen" id="home">
+    <div class="box fade">
+        <div class="small">A LITTLE JOURNEY</div>
+
+        <h1>Untukmu,<br>yang pernah hadir.</h1>
+
+        <p class="subtitle">
+            Sebelum membaca pesan terakhir ini,<br>
+            ada sedikit perjalanan yang harus kamu lewati.
+        </p>
+
+        <button onclick="startGame()">
+            MULAI PERJALANAN ♥
+        </button>
+    </div>
+</section>
+
+
+<!-- LEVEL 1 -->
+<section class="screen hidden" id="level1">
+    <div class="box">
+        <div class="small">PERJALANAN 01</div>
+
+        <div class="question">
+            Kalau mengingat masa lalu,<br>
+            apa yang paling penting?
+        </div>
+
+        <div class="choice">
+            <button onclick="answer(1)">Kenangannya</button>
+            <button onclick="answer(2)">Pelajarannya</button>
+            <button onclick="answer(3)">Orangnya</button>
+            <button onclick="answer(4)">Semuanya</button>
+        </div>
+
+        <div class="result" id="result1"></div>
+
+        <div class="progress">
+            <div class="bar" style="width:25%"></div>
+        </div>
+    </div>
+</section>
+
+
+<!-- LEVEL 2 -->
+<section class="screen hidden" id="level2">
+    <div class="box">
+        <div class="small">PERJALANAN 02</div>
+
+        <div class="game-title">Temukan Pasangannya</div>
+
+        <p class="subtitle">
+            Buka dua kartu yang memiliki simbol sama.
+        </p>
+
+        <div class="memory" id="memory"></div>
+
+        <div class="result" id="result2"></div>
+
+        <div class="progress">
+            <div class="bar" style="width:50%"></div>
+        </div>
+    </div>
+</section>
+
+
+<!-- LEVEL 3 -->
+<section class="screen hidden" id="level3">
+    <div class="box">
+        <div class="small">PERJALANAN 03</div>
+
+        <div class="question">
+            Kalau kamu bisa mengatakan<br>
+            satu hal sekarang...
+        </div>
+
+        <div class="choice">
+            <button onclick="finishGame()">
+                Terima kasih untuk semuanya
+            </button>
+
+            <button onclick="finishGame()">
+                Maaf untuk semuanya
+            </button>
+
+            <button onclick="finishGame()">
+                Semoga kamu bahagia
+            </button>
+
+            <button onclick="finishGame()">
+                Aku sudah merelakan
+            </button>
+        </div>
+
+        <div class="progress">
+            <div class="bar" style="width:75%"></div>
+        </div>
+    </div>
+</section>
+
+
+<!-- UNLOCK -->
+<section class="screen hidden" id="unlock">
+    <div class="box fade">
+
+        <div class="small">PERJALANAN SELESAI</div>
+
+        <h1>Kamu berhasil.</h1>
+
+        <div class="key">♡</div>
+
+        <p class="subtitle">
+            Ada satu pesan yang selama ini<br>
+            belum pernah benar-benar kusampaikan.
+        </p>
+
+        <button onclick="openLetter()">
+            BUKA PESAN TERAKHIR
+        </button>
+    </div>
+</section>
+
+
+<!-- SURAT -->
+<section class="screen hidden" id="final">
+    <div class="box">
+
+        <div class="letter">
+
+            <h2>Untukmu, yang pernah berarti.</h2>
+
+            Aku tidak tahu apakah pesan ini
+            masih perlu kamu baca.
+
+            Tapi ada beberapa hal yang ingin
+            aku tinggalkan dengan tenang.
+
+            Terima kasih.
+
+            Untuk semua cerita yang pernah kita
+            jalani bersama.
+
+            Untuk tawa yang pernah kita bagi.
+
+            Untuk hari-hari yang dulu terasa
+            begitu berarti.
+
+            Aku pernah berpikir bahwa cerita kita
+            akan berlangsung lebih lama.
+
+            Ternyata tidak semua hal yang kita
+            inginkan harus menjadi kenyataan.
+
+            Ada orang yang datang bukan untuk
+            tinggal selamanya.
+
+            Ada yang datang untuk mengajarkan
+            kita sesuatu.
+
+            Tentang kehilangan.
+            Tentang menerima.
+            Tentang melepaskan.
+
+            Aku tidak menulis ini karena ingin
+            mengulang masa lalu.
+
+            Aku hanya ingin mengucapkan
+            terima kasih karena pernah menjadi
+            bagian dari hidupku.
+
+            Maaf untuk semua kesalahan yang
+            mungkin pernah kulakukan.
+
+            Semoga setelah semua yang terjadi,
+            kamu menemukan kebahagiaanmu sendiri.
+
+            Aku juga akan belajar berjalan ke depan,
+            tanpa terus melihat ke belakang.
+
+            Tidak ada dendam.
+            Tidak ada permintaan untuk kembali.
+
+            Hanya sebuah ucapan terakhir dari
+            seseorang yang pernah menganggapmu
+            begitu berarti.
+
+            Semoga kamu baik-baik saja.
+
+            Selalu.
+
+            <div class="signature">
+                — seseorang dari masa lalu
+            </div>
+
+        </div>
+
+    </div>
+</section>
+
+
+<script>
+
+/* BINTANG */
+const canvas=document.getElementById("stars");
+const ctx=canvas.getContext("2d");
+
+let stars=[];
+
+function resize(){
+    canvas.width=innerWidth;
+    canvas.height=innerHeight;
+
+    stars=[];
+
+    for(let i=0;i<150;i++){
+        stars.push({
+            x:Math.random()*canvas.width,
+            y:Math.random()*canvas.height,
+            r:Math.random()*1.5,
+            a:Math.random(),
+            s:Math.random()*.01
+        });
+    }
+}
+
+resize();
+window.onresize=resize;
+
+function drawStars(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+
+    stars.forEach(s=>{
+        s.a+=s.s;
+
+        if(s.a>1||s.a<.1)s.s*=-1;
+
+        ctx.globalAlpha=s.a;
+        ctx.fillStyle="white";
+        ctx.beginPath();
+        ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+        ctx.fill();
+    });
+
+    requestAnimationFrame(drawStars);
+}
+
+drawStars();
+
+
+/* PINDAH SCREEN */
+function show(id){
+
+    document.querySelectorAll(".screen")
+    .forEach(x=>x.classList.add("hidden"));
+
+    document.getElementById(id)
+    .classList.remove("hidden");
+}
+
+
+/* MULAI */
+function startGame(){
+    show("level1");
+}
+
+
+/* LEVEL 1 */
+function answer(n){
+
+    const result=document.getElementById("result1");
+
+    result.innerHTML="Jawabanmu sudah tersimpan ♥";
+
+    setTimeout(()=>{
+        show("level2");
+        createMemory();
+    },1200);
+}
+
+
+/* MEMORY GAME */
+let first=null;
+let lock=false;
+let matches=0;
+
+function createMemory(){
+
+    const board=document.getElementById("memory");
+
+    board.innerHTML="";
+
+    const symbols=["♡","✦","☾","✧","♡","✦","☾","✧"];
+    symbols.sort(()=>Math.random()-.5);
+
+    symbols.forEach(symbol=>{
+
+        const card=document.createElement("div");
+
+        card.className="card";
+        card.innerHTML="?";
+
+        card.onclick=()=>flip(card,symbol);
+
+        board.appendChild(card);
+    });
+}
+
+
+function flip(card,symbol){
+
+    if(lock||card.classList.contains("open"))return;
+
+    card.classList.add("open");
+    card.innerHTML=symbol;
+
+    if(!first){
+
+        first={card,symbol};
+        return;
+    }
+
+    if(first.symbol===symbol){
+
+        matches++;
+        first=null;
+
+        if(matches===4){
+
+            document.getElementById("result2")
+            .innerHTML="Semua kenangan ditemukan ♥";
+
+            setTimeout(()=>{
+                show("level3");
+            },1300);
+        }
+
+    }else{
+
+        lock=true;
+
+        setTimeout(()=>{
+
+            card.classList.remove("open");
+            card.innerHTML="?";
+
+            first.card.classList.remove("open");
+            first.card.innerHTML="?";
+
+            first=null;
+            lock=false;
+
+        },700);
+    }
+}
+
+
+/* LEVEL TERAKHIR */
+function finishGame(){
+
+    show("unlock");
+
+}
+
+
+/* BUKA SURAT */
+function openLetter(){
+
+    show("final");
+
+}
+
+</script>
+
+</body>
+</html>
